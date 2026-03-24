@@ -1,0 +1,95 @@
+/* basically ye mene utility classes bana de mean ab agr me chahta ho ye properties kisi bhi elemnt me lagana tu oske style me ja kr ye likhne ki prorty zrort ni pre gi bs mjhe vha class ka name addd krna hai jha lgana chahta ho me or jonsi lagana chahta ho me  vhaa me  ye name bs add krdo hoga  */
+.b{
+    /* border: 2px solid rgb(250, 6, 6); */
+    margin: 3px;
+}
+.flex{
+    display: flex;
+}
+
+justify-center{
+    justify-content: center;
+}
+.align-center{
+    align-items: center;
+}
+
+.nav{
+     border: 2px solid rgb(156, 20, 20);
+}
+/* ye svg ya images ke color ko invert krne ke le nai hai mean oulat  */
+.invert{
+    filter: invert(1);
+}
+
+.bg-black{
+   background-color: black;
+   color: white;
+}
+
+.bg-grey{
+ background-color: #121212;
+ color: white;
+}
+.bg-sgrey{
+        background-color: #212121;
+
+}
+
+.bg-box{
+ background-color: #1f1f1f ;
+ color: white;
+}
+.rounded{
+    border-radius: 7px;
+}
+
+.margin1{
+    margin: 0px;
+}
+.p-1{
+    padding: 10px;
+}
+.p-2{
+    padding: 14px;
+}
+.margin2{
+    margin-top: -4px;
+    
+}
+.margin3{
+margin-right: 5px;
+}
+
+.margin4{
+ margin-left: 7px;
+}
+.margin5{
+ margin-right: 7px;
+}
+.margin6{
+    margin-top: 10px;
+}
+
+/* Width */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+/* Track (background) */
+::-webkit-scrollbar-track {
+    background: #121212;   /* dark background */
+}
+
+/* Thumb (scroll handle) */
+::-webkit-scrollbar-thumb {
+    background: #535353;
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+/* Hover effect */
+::-webkit-scrollbar-thumb:hover {
+    background: #b3b3b3;
+}
+
