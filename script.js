@@ -19,7 +19,7 @@ function formatTime(seconds) {
 
 async function getsong() {
   // yha me local folder se  fecth kr rha ho data song ka or console kr ke dkeh rha ho ke ye hota hia ya ni
-  let a = await fetch("http://127.0.0.1:3000/songs/");
+  let a = await fetch("http://127.0.0.1:3002/songs/");
   let response = await a.text();
   // console.log(response)
   // yha 1 js se div bnya jisme html fil hogi jo repnose se mile gi
@@ -91,7 +91,7 @@ const playMusic = (track, name, pause = false) => {
   }
 
   // jb jb library se song play kre tb play svg pause se chng ho oske le neche function oska bna kr oper se likha hai ok
-  play.src = "pause.svg";
+  play.src = "images/pause.svg";
   // me chahta ho song ka name or timimg show krwana player me jb koi song run ho
   document.querySelector(".songinfo").innerHTML = name;
   document.querySelector(".playtime").innerHTML = "00:00/00:00";
@@ -114,7 +114,7 @@ async function main() {
   playMusic(firstSongPath, cleanName, true);
 
   // show play icon instead of pause
-  play.src = "play.svg";
+  play.src = "images/play.svg";
 
   //  update duration once metadata is loaded
   currenntSong.addEventListener("loadedmetadata", () => {
@@ -147,14 +147,14 @@ async function main() {
     songUL.innerHTML += `
   <li data-song="${originalPath}" data-name="${cleanName}">
 
-    <img class="invert" src="music.svg" alt="" />
+    <img class="invert" src="images/music.svg" alt="" />
     <div class="infoo">
       <div>${cleanName}</div>
       <div class="siz">Zayn khan</div>
     </div>
     <div class="playnow">
       <span>Play Now</span>
-      <img class="invert" src="play.svg" alt="" />
+      <img class="invert" src="images/play.svg" alt="" />
     </div>
   </li>`;
 
@@ -183,10 +183,10 @@ async function main() {
   play.addEventListener("click", () => {
     if (currenntSong.paused) {
       currenntSong.play();
-      play.src = "pause.svg";
+      play.src = "images/pause.svg";
     } else {
       currenntSong.pause(); //  yahan pause() hoga
-      play.src = "play.svg";
+      play.src = "images/play.svg";
     }
   });
   // varible jo seekbar or circle ko target kre ge
