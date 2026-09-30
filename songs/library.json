@@ -1,0 +1,71 @@
+{
+  "albums": [
+    {
+      "id": "cs",
+      "title": "POP-CULTURE",
+      "description": "songs for me",
+      "cover": "songs/cs/cover.jpg",
+      "tracks": [
+        "songs/cs/Talha%20Anjum%20-%20HAWA%20ANEY%20DE.mp3",
+        "songs/cs/With%20You%20-%20AP%20Dhillon%20(Official%20Music%20Video).mp3"
+      ]
+    },
+    {
+      "id": "Karan Aujla",
+      "title": "POP-CULTURE",
+      "description": "songs for me",
+      "cover": "songs/Karan%20Aujla/cover.AVIF",
+      "tracks": [
+        "songs/Karan%20Aujla/I%20REALLY%20DO.mp3",
+        "songs/Karan%20Aujla/Karan%20Aujla%20_%205-7.mp3"
+      ]
+    },
+    {
+      "id": "ncs",
+      "title": "Swaagy-Songs",
+      "description": "songs for me",
+      "cover": "songs/ncs/cover.webp",
+      "tracks": [
+        "songs/ncs/AADAT.mp3",
+        "songs/ncs/Barbaad%20Song%20%20Saiyaara.mp3",
+        "songs/ncs/Best%20Romantic%20Songs%202k26.mp3",
+        "songs/ncs/Diljit%20Dosanjh.mp3",
+        "songs/ncs/Earners%20Call.mp3",
+        "songs/ncs/Gehra%20Hua%20%20Dhurandhar.mp3",
+        "songs/ncs/MILLIONAIRE.mp3",
+        "songs/ncs/PARMISH%20VERMA%20-%20CUSTOM%20(Official%20Video)%20%23Uff5c%20FEAT.%20MAHIRA%20SHARMA%20%23Uff5c%20GURLEZ%20AKHTAR%20%23Uff5c%20BHUSHAN%20KUMAR.mp3",
+        "songs/ncs/Tamma%20Tamma%20Loge.mp3"
+      ]
+    },
+    {
+      "id": "Ranveer",
+      "title": "Swaagy-Songs",
+      "description": "songs for me",
+      "cover": "songs/Ranveer/cover.avif",
+      "tracks": [
+        "songs/Ranveer/Jaan%20Se%20Guzarte%20Hain.mp3",
+        "songs/Ranveer/Jaiye%20Sajana%20j.mp3",
+        "songs/Ranveer/Jithe%20Mera%20Ghar.mp3",
+        "songs/Ranveer/Run%20Down%20The%20City%20-%20Monica.mp3"
+      ]
+    },
+    {
+      "id": "Romantic",
+      "title": "Swaagy-Songs",
+      "description": "songs for me",
+      "cover": "songs/Romantic/cover.avif",
+      "tracks": [
+        "songs/Romantic/Bas%20Tumse%20Milne%20Ki%20Der%20Thi.mp3"
+      ]
+    },
+    {
+      "id": "zaino",
+      "title": "My songs",
+      "description": "songs for me",
+      "cover": "songs/zaino/cover.avif",
+      "tracks": [
+        "songs/zaino/Barbaad%20Song%20%20Saiyaara.mp3"
+      ]
+    }
+  ]
+}

@@ -23,23 +23,12 @@ async function getsong(folder) {
 
   // mean me yha folder de kr ye krna cha rha ho ke mere songs jis folder se chaho fetch kr sko ok
   // let a = await fetch("http://127.0.0.1:3000/songs/");
-  let a = await fetch(`/${folder}/`);
-  let response = await a.text();
-  // console.log(response)
-  // yha 1 js se div bnya jisme html fil hogi jo repnose se mile gi
-  let div = document.createElement("div");
-  div.innerHTML = response;
-  let as = div.getElementsByTagName("a");
-  let songsArray = [];
-
-  // oly href wale songs ko nikalne ke le ye loop bnaya ke onlu vh song wali kine mile jinme href me song bhi hai oske elawa fzol wali namile  ok
-  for (let index = 0; index < as.length; index++) {
-    const element = as[index];
-    if (element.href.endsWith(".mp3")) {
-      // ye mjhe jo link de ga songs ka osme se split kr ke song ke bd wala shoe kre ga link but mene bs name krwana hai show tu oske le age dkho code hai smjho jao ok mean ye ab 5C ke bd wali chse url ki show kre ga ok
-      songsArray.push(element.href);
-    }
-  }
+  // GitHub Pages par directory listing nahi hoti, isliye songs/library.json se songs le rahe hain
+  let res = await fetch("songs/library.json");
+  let library = await res.json();
+  let albumId = folder.replace(/^songs\//, "");
+  let album = library.albums.find((al) => al.id === albumId);
+  let songsArray = album ? album.tracks.slice() : [];
 
   // display all songs in library
   let songUL = document
@@ -165,40 +154,15 @@ const playMusic = (track, name, pause = false) => {
   document.querySelector(".playtime").innerHTML = "00:00/00:00";
 };
 async function displayAlbums() {
-  let a = await fetch(`http://127.0.0.1:5550/songs/`);
-  let response = await a.text();
-  let div = document.createElement("div");
-  div.innerHTML = response;
-  let anchores = div.getElementsByTagName("a");
-  Array.from(anchores).forEach(async (a) => {
-    let href = a.getAttribute("href");
-    if (!href) return;
-    href = decodeURIComponent(href); // decode %5C %20 etc
-    href = href.replace(/\\/g, "/"); // backslash ko forward slash me convert
-    if (href.endsWith("/") && href !== "/" && href !== "/songs/") {
-      let parts = href.split("/").filter(Boolean); // empty strings remove
-      let foldername = parts.pop(); // last part = folder name
-      // ❗ MAIN FIX  ye jo folder hai song ke bs onhi ka name show krwae ga ok
-      if (foldername === "..") return;
-      console.log("Valid folder:", foldername);
-      // get meta data of folder using json file ok
-      let a = await fetch(
-        `http://127.0.0.1:5550/songs/${foldername}/info.json`,
-      );
-      // agr json ni hai folder me tu ye run hokr bole ga ke ni hai koi json
-      if (!a.ok) {
-        console.log("No JSON for:", foldername);
-        return;
-      }
-      let data = await a.json();
-      console.log("Album data:", data);
-      // ab yha pr meene ye function card ke le bnaya tha na ke jis card pr clik ho oske songs sb load ho jae or ab me aisa dynamic function bna rha ho ke me bs folder bnao osme json file do song rkho koi code na likhna pre or ye sb mri website pr automaticalyy laod ho jae ok tu eske le yekro ga
-      // ab jo cad mene bnae the onko literls me yha papulate krdo ga takke dynamicaly create hote rhe khd ba khd hi ok;
-      let cardContainer = document.querySelector(".card-container");
-      // inner html ki jaga insert adjacent html use ki take jo event kisnter lage hai cards pr voh thek se kam kre ok
-      cardContainer.insertAdjacentHTML(
-        "beforeend",
-        `<div  data-folder="${foldername}" class="cards">
+  // albums bhi library.json se aa rahe hain (directory listing ki jaga)
+  let a = await fetch("songs/library.json");
+  let library = await a.json();
+  let cardContainer = document.querySelector(".card-container");
+  library.albums.forEach((album) => {
+    // inner html ki jaga insert adjacent html use ki take jo event kisnter lage hai cards pr voh thek se kam kre ok
+    cardContainer.insertAdjacentHTML(
+      "beforeend",
+      `<div  data-folder="${album.id}" class="cards">
               <div class="playbuton">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -213,14 +177,11 @@ async function displayAlbums() {
                   ></path>
                 </svg>
               </div>
-              <!-- ab me chahta ho ke jo img folder me dale cover bhi album ka vh lag jae oske le ye kro ga me ok -->
-              <img src="/songs/${foldername}/cover.avif" alt="" />
-              <!-- dynamicaly tutle load krwane ke le yha me ose cal kro ga ok  -->
-              <h2>${data.title}</h2>
-              <p>${data.description}</p>
+              <img src="${album.cover}" alt="" />
+              <h2>${album.title}</h2>
+              <p>${album.description}</p>
             </div>`,
-      );
-    }
+    );
   });
 }
 // ab me js se song list ko target kr ke vha song ki list bnana chahta ho jo jo  hai mere ps tu oske le ye kro ga me
