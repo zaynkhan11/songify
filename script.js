@@ -6,7 +6,7 @@ function formatTime(seconds) {
   if (isNaN(seconds) || seconds < 0) {
     return "00:00";
   }
-  
+
   let minutes = Math.floor(seconds / 60);
   let secs = Math.floor(seconds % 60);
 
@@ -16,27 +16,95 @@ function formatTime(seconds) {
 
   return `${minutes}:${secs}`;
 }
-
-async function getsong() {
+// ab me yha flder yha lgane ka mean ke songs jo hai voh folder me se fetch ho kr load hoge agr e alug alug folders album bana do tu jis pr clik kre ge ta jo chahe osi folder ke song ham load krwa skte hai
+async function getsong(folder) {
   // yha me local folder se  fecth kr rha ho data song ka or console kr ke dkeh rha ho ke ye hota hia ya ni
-  let a = await fetch("http://127.0.0.1:3002/songs/");
+  // ab jaise esme flder ps kia tu ab esko songs ki jaga chnging kre ge or esko 1 template litral me dale ge or me  ye songs wala jo neche likha hai ye bhi kam kr rha hia fetch kr rha hai songs but ye 1 hu jaga se kr skta alug alug jaga se ni tu eska concpt me commnt out kr rha ho or dosra wala neche likh rha ho folder wala take dono mjhe ydd rhe ok
+
+  // mean me yha folder de kr ye krna cha rha ho ke mere songs jis folder se chaho fetch kr sko ok
+  // let a = await fetch("http://127.0.0.1:3000/songs/");
+  let a = await fetch(`/${folder}/`);
   let response = await a.text();
   // console.log(response)
   // yha 1 js se div bnya jisme html fil hogi jo repnose se mile gi
   let div = document.createElement("div");
   div.innerHTML = response;
   let as = div.getElementsByTagName("a");
-  let songs = [];
+  let songsArray = [];
 
   // oly href wale songs ko nikalne ke le ye loop bnaya ke onlu vh song wali kine mile jinme href me song bhi hai oske elawa fzol wali namile  ok
   for (let index = 0; index < as.length; index++) {
     const element = as[index];
     if (element.href.endsWith(".mp3")) {
       // ye mjhe jo link de ga songs ka osme se split kr ke song ke bd wala shoe kre ga link but mene bs name krwana hai show tu oske le age dkho code hai smjho jao ok mean ye ab 5C ke bd wali chse url ki show kre ga ok
-      let vb = songs.push(element.href);
+      songsArray.push(element.href);
     }
   }
-  return songs;
+
+  // display all songs in library
+  let songUL = document
+    .querySelector(".songlist")
+    .getElementsByTagName("ul")[0];
+  songUL.innerHTML = "";
+  for (let song of songsArray) {
+    let originalPath = song;
+    //  decode %20 %5C etc
+    song = decodeURIComponent(song);
+
+    //  remove path ( / or \ )
+    let cleanName = song.replace(/^.*[\\/]/, "");
+
+    // remove extension
+    cleanName = cleanName.replace(".mp3", "");
+
+    //  remove (Official Video) etc
+    cleanName = cleanName.replace(/\(.*?\)/g, "").trim();
+
+    // agar dash ho to sirf pehla part lo
+    if (cleanName.includes("-")) {
+      cleanName = cleanName.split("-")[0].trim();
+    }
+    songUL.innerHTML += `
+  <li data-song="${originalPath}" data-name="${cleanName}">
+
+    <img class="invert" src="images/music.svg" alt="" />
+    <div class="infoo">
+      <div>${cleanName}</div>
+      <div class="siz">Zayn khan</div>
+    </div>
+    <div class="playnow">
+      <span>Play Now</span>
+      <img class="invert" src="images/play.svg" alt="" />
+    </div>
+  </li>`;
+
+    // songUL.innerHTML += `<li>${cleanName}</li>`;
+  }
+  //  website r kahi bhi clik kr rha tha tu song play ho rha tha
+  // document.addEventListener("click", () => {
+  //   var audio = new Audio(songs[4]); // play first song
+  //   audio.play();
+  // });
+
+  // me chahta ho jis song pr clik kro vhi play ho oske le mean yha ham addd event listner to each song kr rhe hia ok
+  //yha hum event listner ko hr song se attach kr rhe hai
+  Array.from(
+    document.querySelector(".songlist").getElementsByTagName("li"),
+  ).forEach((e) => {
+    e.addEventListener("click", () => {
+      let actualSong = e.getAttribute("data-song"); // original filename
+      let displayName = e.getAttribute("data-name"); // ✅ song name
+
+      console.log("Playing:", displayName); // ab console me naam aayega
+      playMusic(actualSong, displayName);
+    });
+  });
+
+  // update the global variable too
+  songs = songsArray;
+
+  // return the array
+  return songsArray;
 }
 // async fnction khbhi value return ni krta direct voh hame promise deta hai tu osme se nikalne ke le value ham .then use krte hai ok/
 // eska mean getsong se jo output mili mean songs ose console me show krwa rhe hai ok
@@ -96,89 +164,99 @@ const playMusic = (track, name, pause = false) => {
   document.querySelector(".songinfo").innerHTML = name;
   document.querySelector(".playtime").innerHTML = "00:00/00:00";
 };
-
+async function displayAlbums() {
+  let a = await fetch(`http://127.0.0.1:5550/songs/`);
+  let response = await a.text();
+  let div = document.createElement("div");
+  div.innerHTML = response;
+  let anchores = div.getElementsByTagName("a");
+  Array.from(anchores).forEach(async (a) => {
+    let href = a.getAttribute("href");
+    if (!href) return;
+    href = decodeURIComponent(href); // decode %5C %20 etc
+    href = href.replace(/\\/g, "/"); // backslash ko forward slash me convert
+    if (href.endsWith("/") && href !== "/" && href !== "/songs/") {
+      let parts = href.split("/").filter(Boolean); // empty strings remove
+      let foldername = parts.pop(); // last part = folder name
+      // ❗ MAIN FIX  ye jo folder hai song ke bs onhi ka name show krwae ga ok
+      if (foldername === "..") return;
+      console.log("Valid folder:", foldername);
+      // get meta data of folder using json file ok
+      let a = await fetch(
+        `http://127.0.0.1:5550/songs/${foldername}/info.json`,
+      );
+      // agr json ni hai folder me tu ye run hokr bole ga ke ni hai koi json
+      if (!a.ok) {
+        console.log("No JSON for:", foldername);
+        return;
+      }
+      let data = await a.json();
+      console.log("Album data:", data);
+      // ab yha pr meene ye function card ke le bnaya tha na ke jis card pr clik ho oske songs sb load ho jae or ab me aisa dynamic function bna rha ho ke me bs folder bnao osme json file do song rkho koi code na likhna pre or ye sb mri website pr automaticalyy laod ho jae ok tu eske le yekro ga
+      // ab jo cad mene bnae the onko literls me yha papulate krdo ga takke dynamicaly create hote rhe khd ba khd hi ok;
+      let cardContainer = document.querySelector(".card-container");
+      // inner html ki jaga insert adjacent html use ki take jo event kisnter lage hai cards pr voh thek se kam kre ok
+      cardContainer.insertAdjacentHTML(
+        "beforeend",
+        `<div  data-folder="${foldername}" class="cards">
+              <div class="playbuton">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  data-encore-id="icon"
+                  role="img"
+                  aria-hidden="true"
+                  class="e-91000-icon e-91000-baseline"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606"
+                  ></path>
+                </svg>
+              </div>
+              <!-- ab me chahta ho ke jo img folder me dale cover bhi album ka vh lag jae oske le ye kro ga me ok -->
+              <img src="/songs/${foldername}/cover.avif" alt="" />
+              <!-- dynamicaly tutle load krwane ke le yha me ose cal kro ga ok  -->
+              <h2>${data.title}</h2>
+              <p>${data.description}</p>
+            </div>`,
+      );
+    }
+  });
+}
 // ab me js se song list ko target kr ke vha song ki list bnana chahta ho jo jo  hai mere ps tu oske le ye kro ga me
 async function main() {
   // get list of all songs songs varible ham yha diirect use kr rhe hai ku ke hamne se globalyy let kia hua hai phle hi function se bhar
-  songs = await getsong();
+  // opr mene folder ke le function bana lia or ab me yha neche bta oga kis folder se fetch krne hai yha mene get songs me songs/ncs likha tu mean jo mera ncs me songs hai voh sb yha load ho jae ge get hokr ok
+  songs = await getsong("songs/ncs");
   console.log("Songs:", songs);
   // agr me chahta ho ke jaise me website open kro ya load kro tu first song play bar me automatic load ho jae or vhi se ose chala lo agr chaho tu vrna jo dil ho ospr clik kr ke playbar me load krlo ose ok
-  let firstSongPath = songs[0];
-  let cleanName = decodeURIComponent(firstSongPath)
-    .replace(/^.*[\\/]/, "")
-    .replace(".mp3", "")
-    .replace(/\(.*?\)/g, "")
-    .trim();
+  songs = await getsong("songs/ncs"); // songs now contains array
+  if (songs.length > 0) {
+    let firstSongPath = songs[0];
+    let cleanName = decodeURIComponent(firstSongPath)
+      .replace(/^.*[\\/]/, "")
+      .replace(".mp3", "")
+      .replace(/\(.*?\)/g, "")
+      .trim();
 
-  // load first song but don't auto-play
-  playMusic(firstSongPath, cleanName, true);
+    // load first song but don't auto-play
+    playMusic(firstSongPath, cleanName, true);
 
-  // show play icon instead of pause
-  play.src = "images/play.svg";
+    // show play icon instead of pause
+    play.src = "images/play.svg";
 
-  //  update duration once metadata is loaded
-  currenntSong.addEventListener("loadedmetadata", () => {
-    let total = formatTime(currenntSong.duration);
-    document.querySelector(".playtime").innerHTML = `00:00 / ${total}`;
-  });
-
-  // display all songs in library
-  let songUL = document
-    .querySelector(".songlist")
-    .getElementsByTagName("ul")[0];
-  for (let song of songs) {
-    let originalPath = song;
-    //  decode %20 %5C etc
-    song = decodeURIComponent(song);
-
-    //  remove path ( / or \ )
-    let cleanName = song.replace(/^.*[\\/]/, "");
-
-    // remove extension
-    cleanName = cleanName.replace(".mp3", "");
-
-    //  remove (Official Video) etc
-    cleanName = cleanName.replace(/\(.*?\)/g, "").trim();
-
-    // agar dash ho to sirf pehla part lo
-    if (cleanName.includes("-")) {
-      cleanName = cleanName.split("-")[0].trim();
-    }
-    songUL.innerHTML += `
-  <li data-song="${originalPath}" data-name="${cleanName}">
-
-    <img class="invert" src="images/music.svg" alt="" />
-    <div class="infoo">
-      <div>${cleanName}</div>
-      <div class="siz">Zayn khan</div>
-    </div>
-    <div class="playnow">
-      <span>Play Now</span>
-      <img class="invert" src="images/play.svg" alt="" />
-    </div>
-  </li>`;
-
-    // songUL.innerHTML += `<li>${cleanName}</li>`;
-  }
-  //  website r kahi bhi clik kr rha tha tu song play ho rha tha
-  // document.addEventListener("click", () => {
-  //   var audio = new Audio(songs[4]); // play first song
-  //   audio.play();
-  // });
-
-  // me chahta ho jis song pr clik kro vhi play ho oske le
-  //yha hum event listner ko hr song se attach kr rhe hai
-  Array.from(
-    document.querySelector(".songlist").getElementsByTagName("li"),
-  ).forEach((e) => {
-    e.addEventListener("click", () => {
-      let actualSong = e.getAttribute("data-song"); // original filename
-      let displayName = e.getAttribute("data-name"); // ✅ song name
-
-      console.log("Playing:", displayName); // ab console me naam aayega
-      playMusic(actualSong, displayName);
+    //  update duration once metadata is loaded
+    currenntSong.addEventListener("loadedmetadata", () => {
+      let total = formatTime(currenntSong.duration);
+      document.querySelector(".playtime").innerHTML = `00:00 / ${total}`;
     });
-  });
+
+    // display krne ke all albums page pr diplay jo functin bnaya hai osko yha call kreo ge ok
+    displayAlbums();
+  }
+
+  // ADD all albums on page dynamically mean ham bs folder bnae ge osme songs de ge voh dynamically khd hi load hokr show ho jae gi website kis screen pr
+
   // add event listner for ,play and pause svgs.
   play.addEventListener("click", () => {
     if (currenntSong.paused) {
@@ -291,15 +369,44 @@ async function main() {
 
     playMusic(songPath, cleanName);
   });
-   
+
   // ADD event listner for voulmerange
   // ye krne se ham jb slide kre ge tu oski base pr value mile gi ke kha pr volume ki kia value hai
-  document.querySelector(".rangvlm").getElementsByTagName("input")[0].addEventListener("change",(e)=>{
-    console.log("Setting volume to",e.target.value,"/100")
-    // ab yha slider ke sath music voulme ko link kr rhe hai ham
-    currenntSong.volume=parseInt(e.target.value)/100
-    
-  })
- 
+  document
+    .querySelector(".rangvlm")
+    .getElementsByTagName("input")[0]
+    .addEventListener("change", (e) => {
+      console.log("Setting volume to", e.target.value, "/100");
+      // ab yha slider ke sath music voulme ko link kr rhe hai ham
+      currenntSong.volume = parseInt(e.target.value) / 100;
+    });
+  // load the playlist on which card user click
+  // ab esko array me bnae ge ku ke hame collection return kre ga ye ok  and ku ke for each hame colllection bhi ni deta esle array lgate hai ok
+  const cardContainer = document.querySelector(".card-container");
+  // awat function bnaya oske le async bnanya esko
+  cardContainer.addEventListener("click", async (event) => {
+    // Check if the click was on a card or inside a card
+    const card = event.target.closest(".cards");
+    if (!card) return; // clicked outside a card
+
+    const folderName = card.dataset.folder;
+   songs = await getsong(`songs/${folderName}`);
+    console.log("Songs loaded from album:", folderName);
+    // ✅ PLAY FIRST SONG AUTOMATICALLY
+    if (songs.length > 0) {
+      let firstSongPath = songs[0];
+      let cleanName = decodeURIComponent(firstSongPath)
+        .replace(/^.*[\\/]/, "")
+        .replace(".mp3", "")
+        .replace(/\(.*?\)/g, "")
+        .trim();
+
+      playMusic(firstSongPath, cleanName); // automatically play
+
+      // reset currentIndex for next/previous buttons
+      currentIndex = 0;
+      currentIndex1 = 0;
+    }
+  });
 }
 main();

@@ -531,7 +531,10 @@ input[type="range"] {
     left: -140%;
     width: 370px;
     height: 150vh;
-    transition: 0.4s;
+    transition:
+      left 0.4s ease,
+      width 0.4s ease,
+      height 0.4s ease; /* add smooth transition */
     z-index: 1;
   }
 
@@ -544,13 +547,14 @@ input[type="range"] {
     width: 100%;
   }
   .Trending-songs > img {
-    display: block;
+    /* display: block; */
     cursor: pointer;
-    height: 108px;
+    display: flex;
+    height: 95px;
     width: 124px;
-    margin-top: -27px;
-    margin-left: -57px;
-    padding-bottom: 20px;
+    margin-top: -38px;
+    margin-left: -62px;
+    padding-bottom: -18px;
   }
   .container {
     position: relative;
@@ -558,7 +562,7 @@ input[type="range"] {
   }
   .playbar {
     position: absolute;
-    bottom: 0;
+    bottom: 54px;
     width: calc(100vw - 60px);
     left: 5px;
     z-index: 1;
@@ -583,10 +587,10 @@ input[type="range"] {
   .card-container {
     margin: 0px;
     justify-content: center;
-    /* margin-left: -10%; */
+    margin-left: -10%;
     align-items: center;
 
-    width: 80vw;
+    width: 90vw;
   }
   .cards h2 {
     font-size: 29px;
@@ -650,5 +654,77 @@ input[type="range"] {
     justify-content: space-between;
     margin: 15px 0px;
     flex-direction: column;
+  }
+  .Trending-songs h1 {
+    font-size: 43px;
+    font-weight: bolder;
+    transition: text 0.25s ease;
+    margin-top: -13px;
+    display: flex;
+    justify-content: center;
+    left: -54px;
+    position: relative;
+  }
+  .card-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    overflow-y: scroll;
+    max-height: 45vh;
+  }
+  .fzol {
+    border: 2px solid black;
+    margin-top: 5px;
+    width: 104%;
+    margin-left: -11px;
+  }
+  .search-box {
+    display: flex;
+    align-items: center;
+    background-color: #1f1f1f;
+    border-radius: 37px;
+    padding: 14px 36px;
+    width: 163px;
+    margin-right: 44px;
+    transition: background 0.9s ease;
+  }
+  .search-box input {
+    font-size: 14px;
+    position: relative;
+    left: -26px;
+    top: 0px;
+  }
+  .search-box .camera-icon {
+    font-size: 18px;
+    position: relative;
+    right: 13px;
+    top: -5px;
+  }
+  .home-icon svg {
+    width: 0px;
+    height: 28px;
+    fill: #fff;
+  }
+  .home-icon {
+    width: 0px;
+  }
+  .navbar-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    left: -40px;
+    position: relative;
+  }
+  .navbar-right a {
+    font-size: 0px;
+  }
+  .login-btn {
+    margin-left: -567px;
+    padding: 10px 15px;
+    font-size: 13px;
+  }
+  .navbar-left {
+    position: relative;
+    left: -13px;
   }
 }
